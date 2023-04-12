@@ -4,19 +4,20 @@
 # - clunky window interactions - fix updating every second
 # - Add button to hide timer and/or add option to remove second display
 
-import tkinter as tk
 from tkinter import *
 from time import sleep
 import datetime
+import json
+from os.path import *
+
 
 root = Tk()
-
 dailyTimes = {}
+working = True
 
-labels_on = False
-
-#def toggle():
-#    lambda:hide_widget(l1)
+if isfile('dict.json'):
+    with open('dict.json') as f:
+        dailyTimes = json.load(f)
 
 def getDate():
     month = str(datetime.datetime.now().month)
@@ -25,20 +26,24 @@ def getDate():
     return month + '/' + day
 
 def beginTimer():
-    button.destroy()
+    global working
+
+    # button.destroy()
 
     working = True
 
     while working:
-        intSec = int(sec.get())
+        intSec = float(sec.get())
         intMins = int(mins.get())
         intHrs = int(hrs.get())
-        intSec += 1
+        intSec += 0.05
 
         if intSec >= 60:
             intMins += 1
             intSec = 0
             dailyTimes[getDate()] = dailyTimes.get(getDate(), 0) + 1
+
+            print("new minute!")
         
         if intMins >= 60:
             intHrs += 1
@@ -61,11 +66,19 @@ def beginTimer():
         sec.set(output[2])
         daily.set(f'{getDate()} Screen Time: {output[3]} hrs {output[4]} mins')        
 
-        #print(getDate())
-
-        sleep(1)
+        sleep(0.05)
 
         root.update()
+
+def stopTimer():
+    global working
+    working = False
+
+def end():
+    global working
+    working = False
+    print("the window has closed")
+    root.destroy()
 
 hrs = StringVar()
 mins = StringVar()
@@ -90,9 +103,22 @@ l3 = Label(frame, textvariable = sec).place(relx = 0.7, rely = 0.4)
 l4 = Label(frame, textvariable = daily).place(relx = 0.1, rely = 0.6)
 
 
-button = Button(frame, command = beginTimer, text = 'Begin Timer')
+button = Button(frame, command = beginTimer, text = 'Start Timer')
 button.pack()
+
+button1 = Button(frame, command = stopTimer, text = "Stop Timer")
+button1.pack()
+
+root.protocol("WM_DELETE_WINDOW", end)
 
 
 mainloop()
+
+
+save = json.dumps(dailyTimes)
+f = open('dict.json', 'w')
+f.write(save)
+f.close()
+
+
 
