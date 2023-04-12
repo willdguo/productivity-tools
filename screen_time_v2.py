@@ -1,9 +1,8 @@
 # features to add:
-# - make timer reliant on datetime.now as opposed to counter (wastes cpu on program time)
 # - keep screentime tracker on as timer stops
 # - option to remove/hide timer aspect
-# - abstract single-to-double-digit function
 # - create "break" counter
+# - make timer reliant on datetime.now as opposed to counter (wastes cpu on program time)
 
 from tkinter import *
 from time import sleep
@@ -38,6 +37,8 @@ def intToTime(num):
 
     return (a, b, c)
 
+# appends '0' to the start of single digit integers
+# params: tuple of integers; return: integers of >= 2 digits
 def toDoubleDigits(tuple):
     output = ()
 
@@ -80,10 +81,12 @@ def beginTimer():
         sleep(increment)
         root.update()
 
+# ends timer & subsequent counter
 def stopTimer():
     global working
     working = False
 
+# ends program upon window close, allowing work time to be saved
 def end():
     global working
     working = False
